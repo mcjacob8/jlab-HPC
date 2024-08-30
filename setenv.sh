@@ -23,15 +23,15 @@
 # 1) Using /group/halla/modulefiles (Recommended)
 # E.g. ANAVER='1.7.4' loads analyzer/1.7.4. It comes with:
 # root/6.26.10, gcc/12.3.0, python/3.11.4,x & evio/5.3
-ANAVER='1.7.4'  # Analyzer version
+ANAVER='1.7.8'  # Analyzer version
 # 2) Using /site/12gev_phys/softenv.sh (NOT recommended!) 
 # ** $ANALYZER will be needed for this
-useJLABENV=1    # =1, forces 12gev_phys environment
+useJLABENV=0    # =1, forces 12gev_phys environment
 JLABENV='2.6'   # /site/12gev_phys/softenv.sh version
 # ********************************************** # 
 
 # Required by all
-export SCRIPT_DIR=/Path/to/jlab-HPC/repository
+export SCRIPT_DIR=/Path/to/jlab-HPC/repository  # Put in work directory
 
 # Required by the scripts running G4SBS or LIBSBSDIG jobs
 export G4SBS=/Path/to/G4SBS/install/directory
