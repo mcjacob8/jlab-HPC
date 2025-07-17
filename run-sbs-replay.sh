@@ -9,8 +9,8 @@
 # ** Do not tamper with this sticker! Log any updates to the script above.  #
 # ------------------------------------------------------------------------- #
 
-#SBATCH --partition=production
-#SBATCH --account=halla
+#SBATCH --partition=standard
+#SBATCH -A myaccount
 #SBATCH --mem-per-cpu=1500
 
 # List of arguments
@@ -38,34 +38,46 @@ export SBS_REPLAY=$sbsreplayenv
 export DATA_DIR=$datadir
 # ----------------------------------------------------------- #
 
-ifarmworkdir=${PWD}
-if [[ $run_on_ifarm == 1 ]]; then
-    SWIF_JOB_WORK_DIR=$ifarmworkdir
-fi
-echo 'Work directory = '$SWIF_JOB_WORK_DIR
+rivannaworkdir=${PWD}
+#if [[ $run_on_ifarm == 1 ]]; then
+#    SWIF_JOB_WORK_DIR=$ifarmworkdir
+#fi
+echo 'Work directory = '$rivannaworkdir  #$SWIF_JOB_WORK_DIR
 
 # Enabling module
 MODULES=/etc/profile.d/modules.sh 
 if [[ $(type -t module) != function && -r ${MODULES} ]]; then 
     source ${MODULES} 
 fi 
-# Choosing software environment
-if [[ (! -d /group/halla/modulefiles) || ($useJLABENV -eq 1) ]]; then 
-    source /site/12gev_phys/softenv.sh $JLABENV
-    source $ANALYZER/bin/setup.sh
-else 
-    module use /group/halla/modulefiles
-    module load analyzer/$ANAVER
-    module list
+
+# Load required modules (modify these based on what's available)
+module use /share/apps/modulefiles
+module load gcc
+module load physics/root
+module load cmake
+
+# Source analyzer setup if available
+if [[ -f /standard/sbs/Analyzer/bin/setup.sh ]]; then
+    source /standard/sbs/Analyzer/bin/setup.sh
 fi
+
+# Choosing software environment
+#if [[ (! -d /group/halla/modulefiles) || ($useJLABENV -eq 1) ]]; then 
+#    source /site/12gev_phys/softenv.sh $JLABENV
+#    source $ANALYZER/bin/setup.sh
+#else 
+#    module use /group/halla/modulefiles
+#    module load analyzer/$ANAVER
+#    module list
+#fi
 
 # setup analyzer specific environments
 export ANALYZER_CONFIGPATH=$SBS_REPLAY/replay
 source $SBSOFFLINE/bin/sbsenv.sh
 
 export DB_DIR=$SBS_REPLAY/DB
-export OUT_DIR=$SWIF_JOB_WORK_DIR
-export LOG_DIR=$SWIF_JOB_WORK_DIR
+export OUT_DIR=$rivannaworkdir  # $SWIF_JOB_WORK_DIR
+export LOG_DIR=$rivannaworkdir  # $SWIF_JOB_WORK_DIR
 
 echo 'DB_DIR='$DB_DIR
 echo 'OUT_DIR='$OUT_DIR
@@ -76,7 +88,7 @@ echo 'LOG_DIR='$LOG_DIR
 if [[ -f .rootrc ]]; then
     mv .rootrc .rootrc_temp
 fi
-cp $SBS/run_replay_here/.rootrc $SWIF_JOB_WORK_DIR
+cp $SBS/run_replay_here/.rootrc $rivannaworkdir  #$SWIF_JOB_WORK_DIR
 
 if [ $prefix = 'e1209019' ] #GMN replay
 then
@@ -90,6 +102,7 @@ fi
 
 if [ $prefix = 'gep5' ] #GEP replay #Hard-coded for 3-stream.
 then
+    echo analyzer -b -q 'replay_gep.C+('$runnum','$maxevents','$firstevent','\"$prefix\"','$firstsegment','$maxsegments',2,0,0,0,'$use_sbs_gems')'
     analyzer -b -q 'replay_gep.C+('$runnum','$maxevents','$firstevent','\"$prefix\"','$firstsegment','$maxsegments',2,0,0,0,'$use_sbs_gems')'
 fi
 

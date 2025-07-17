@@ -17,15 +17,15 @@ source setenv.sh
 # List of arguments
 runs=$1       # run number 
 prefix=-1     # We will initialize the rest in a second
-run_on_ifarm=-1
+run_on_rivanna=-1
 nevents=-1
 maxsegments=-1
 segments_per_job=-1
 use_sbs_gems=             # 0 = no sbs gems, 1 = use sbs gems
-# Workflow name (Not relevant if run_on_ifarm = 1)
-workflowname=test_workflow
+# Workflow name (Not relevant if run_on_rivanna = 1)
+workflowname=GEP_replay_test
 # Specify a directory on volatile to store replayed ROOT files
-outdirpath=
+outdirpath=/scratch/rby2vw/GEP-Replay/Kin3
 
 
 type=0  # 1 = multi run from txt file, 0 = single run
@@ -45,7 +45,7 @@ fi
 if [ "$#" -ne 6 ] && [ "$#" -ne 3 ] && [ "$#" -ne 4 ] && [ "$#" -ne 7 ]; then
     echo -e "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
     echo -e "This script expects 2 options for inputs:\n"
-    echo -e "Option 1: sbs-replay-main.sh <runnum> <prefix> <nevents> <maxsegments> <segments_per_job> <run_on_ifarm> <use_sbs_gems (optional)>"
+    echo -e "Option 1: sbs-replay-main.sh <runnum> <prefix> <nevents> <maxsegments> <segments_per_job> <run_on_rivanna> <use_sbs_gems (optional)>"
     echo -e "<use_sbs_gems> is optional (off by default)\n"
     echo -e "or\n"
     echo -e "Option 2: sbs-replay-main.sh <runlist> <maxsegments> <segments_per_job> <use_sbs_gems (optional)>"
@@ -71,12 +71,11 @@ if ! [[ $runs =~ $re ]] ; then
     type=1;
 fi
 
-
 # If this is a single run replay then we do that
 if [ $type -eq 0 ]; then
     if [ "$#" -ne 6 ] && [ "$#" -ne 7 ]; then
 	echo -e "!!!! Error, single run replay needs 6 or 7 arguments !!!!"
-	echo -e "sbs-replay-main.sh <runnum> <prefix> <nevents> <maxsegments> <segments_per_job> <run_on_ifarm> <use_sbs_gems (optional)>\n"
+	echo -e "sbs-replay-main.sh <runnum> <prefix> <nevents> <maxsegments> <segments_per_job> <run_on_rivanna> <use_sbs_gems (optional)>\n"
 	exit
     fi
     #read in variables expected for a single run replay
@@ -84,7 +83,7 @@ if [ $type -eq 0 ]; then
     nevents=$3
     maxsegments=$4 
     segments_per_job=$5 
-    run_on_ifarm=$6
+    run_on_rivanna=$6
     use_sbs_gems=$7
 
     #if use_sbs_gems has no input assume it is 0 (not used)
@@ -100,26 +99,26 @@ if [ $type -eq 0 ]; then
 
 elif [ $type -eq 1 ]; then   #Otherwise do a runlist replay
     if [ "$#" -ne 3 ] && [ "$#" -ne 4 ]; then
-	echo -e "!!!! Error, runlist replay needs 3 arguments !!!!"
-	echo -e "sbs-replay-main.sh <runlist> <maxsegments> <segments_per_job> <use_sbs_gems (optional)>\n"
-	exit
+	  echo -e "!!!! Error, runlist replay needs 3 arguments !!!!"
+	  echo -e "sbs-replay-main.sh <runlist> <maxsegments> <segments_per_job> <use_sbs_gems (optional)>\n"
+	  exit
     fi
     nevents=-1
     maxsegments=$2 
     segments_per_job=$3 
     use_sbs_gems=$4
-    run_on_ifarm=0
+    run_on_rivanna=0
 
     #if use_sbs_gems has no input assume it is 0 (not used)
     if [ -z "$use_sbs_gems" ]
     then
-	use_sbs_gems=0
+	  use_sbs_gems=0
     fi
 
     #read the configuration info from the text file
     if [ ! -f "$runs" ]; then
-	echo "!!!! Error, $runs does not exist !!!!"
-	exit
+	  echo "!!!! Error, $runs does not exist !!!!"
+	  exit
     fi
 
     prefix=$(head -n 1 "$runs" | tail -n 1)
@@ -127,10 +126,9 @@ elif [ $type -eq 1 ]; then   #Otherwise do a runlist replay
     workflowname=$(head -n 3 "$runs" | tail -n 1)
 fi
 
-
 #Automatically set the data path pased on the experiment number
 #Will need to get updated as more experiments are added
-export DATA_PATH=halla/sbs/GEnII/raw 
+export DATA_PATH=/scratch/rby2vw
 
 if [ $prefix = 'e1209019' ]
 then
@@ -152,7 +150,7 @@ fi
     fi
 
 #Check the workflow and out directory name
-if [[ $run_on_ifarm -ne 1 ]]; then
+if [[ $run_on_rivanna -ne 1 ]]; then
     echo -e ' "workflowname" : '$workflowname''
 fi
 echo -e ' "outdirpath"   : '$outdirpath' \n------'
@@ -163,7 +161,7 @@ while true; do
 	[Yy]*) 
 	    break; ;;
 	    [Nn]*) 
-	    if [[ $run_on_ifarm -ne 1 ]]; then
+	    if [[ $run_on_rivanna -ne 1 ]]; then
 		read -p "Enter desired workflowname : " temp1
 		workflowname=$temp1
 	    fi
@@ -173,48 +171,47 @@ while true; do
     esac
 done
 
-
 # Create the output directory if necessary
 if [[ ! -d $outdirpath ]]; then
     { #try
-	mkdir $outdirpath
+	  mkdir $outdirpath
     } || { #catch
-	echo -e "\n!!!!!!!! ERROR !!!!!!!!!"
-	echo -e $outdirpath "doesn't exist and cannot be created! \n"
-	exit;
+	  echo -e "\n!!!!!!!! ERROR !!!!!!!!!"
+	  echo -e $outdirpath "doesn't exist and cannot be created! \n"
+	  exit;
     }
 fi
 if [[ ! -d $outdirpath'/rootfiles' ]]; then
     { #try
-	mkdir $outdirpath'/rootfiles'
+	  mkdir $outdirpath'/rootfiles'
     } || { #catch
-	echo -e "\n!!!!!!!! ERROR !!!!!!!!!"
-	echo -e $outdirpath'/rootfiles' "doesn't exist and cannot be created! \n"
-	exit;
+	  echo -e "\n!!!!!!!! ERROR !!!!!!!!!"
+	  echo -e $outdirpath'/rootfiles' "doesn't exist and cannot be created! \n"
+	  exit;
     }
 fi
 if [[ ! -d $outdirpath'/logs' ]]; then
     { #try
-	mkdir $outdirpath'/logs'
+	  mkdir $outdirpath'/logs'
     } || { #catch
-	echo -e "\n!!!!!!!! ERROR !!!!!!!!!"
-	echo -e $outdirpath'/logs' "doesn't exist and cannot be created! \n"
-	exit;
+	  echo -e "\n!!!!!!!! ERROR !!!!!!!!!"
+	  echo -e $outdirpath'/logs' "doesn't exist and cannot be created! \n"
+	  exit;
     }
 fi
 
 
-
 # Creating the workflow
-if [[ $run_on_ifarm -ne 1 ]]; then
-    swif2 create $workflowname
+if [[ $run_on_rivanna -ne 1 ]]; then
+    echo -e "\nSubmitting Slurm Job!\n"
+#    swif2 create $workflowname
 else
-    echo -e "\nRunning all jobs on ifarm!\n"
+    echo -e "\nRunning all jobs on rivanna!\n"
 fi
 
 #if a single run then we do a single job
 if [ $type -eq 0 ]; then
-    $SCRIPT_DIR'/submit-sbs-jobs.sh' $runs $prefix $nevents $maxsegments $segments_per_job $use_sbs_gems $run_on_ifarm $outdirpath $workflowname $SCRIPT_DIR $ANALYZER $SBSOFFLINE $SBS_REPLAY $DATA_PATH $ANAVER $useJLABENV $JLABENV
+    $SCRIPT_DIR'/submit-sbs-jobs.sh' $runs $prefix $nevents $maxsegments $segments_per_job $use_sbs_gems $run_on_rivanna $outdirpath $workflowname $SCRIPT_DIR $ANALYZER $SBSOFFLINE $SBS_REPLAY $DATA_PATH $ANAVER $useJLABENV $JLABENV
 fi
 
 
@@ -228,11 +225,11 @@ if [ $type -eq 1 ]; then
 	    line_num=$((line_num + 1))
 	    continue
 	fi
-	$SCRIPT_DIR'/submit-sbs-jobs.sh' $runs $prefix $nevents $maxsegments $segments_per_job $use_sbs_gems $run_on_ifarm $outdirpath $workflowname $SCRIPT_DIR $ANALYZER $SBSOFFLINE $SBS_REPLAY $DATA_PATH $ANAVER $useJLABENV $JLABENV
+    $SCRIPT_DIR'/submit-sbs-jobs.sh' $runs $prefix $nevents $maxsegments $segments_per_job $use_sbs_gems $run_on_rivanna $outdirpath $workflowname $SCRIPT_DIR $ANALYZER $SBSOFFLINE $SBS_REPLAY $DATA_PATH $ANAVER $useJLABENV $JLABENV
     done < $runs
 fi
 
-if [[ $run_on_ifarm -ne 1 ]]; then
-    swif2 run $workflowname
-    swif2 status $workflowname
-fi
+#if [[ $run_on_rivanna -ne 1 ]]; then
+#    swif2 run $workflowname
+#    swif2 status $workflowname
+#fi
