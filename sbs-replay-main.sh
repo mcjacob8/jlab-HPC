@@ -6,7 +6,7 @@
 # list of runs to the ifarm or the swif2 system. It is created based on     #
 # Provakar Datta's script                                                   #
 # ---------                                                                 #
-# Sean Jeffas, sj9ry@virginia.edu CREATED 07-24-2023                        #
+# Jacob McMurtry, rby2vw@virginia.edu CREATED 07-25-2025                    #
 # ---------                                                                 #
 # ** Do not tamper with this sticker! Log any updates to the script above.  #
 # ------------------------------------------------------------------------- #
@@ -128,7 +128,7 @@ fi
 
 #Automatically set the data path pased on the experiment number
 #Will need to get updated as more experiments are added
-export DATA_PATH=/scratch/rby2vw
+export DATA_PATH=/scratch/rby2vw   # USER EDIT THIS HERE
 
 if [ $prefix = 'e1209019' ]
 then
