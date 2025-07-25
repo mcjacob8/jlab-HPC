@@ -54,4 +54,4 @@ export SBS_REPLAY=/standard/sbs/mcjacob/sbsoffline/SBS-replay # User input here
 # to be added to the left side of them, ie /cache/$GMN_DATA_PATH
 export GMN_DATA_PATH=halla/sbs/raw
 export GEN_DATA_PATH=halla/sbs/GEnII/raw
-export GEP_DATA_PATH=/scratch/rby2vw     # User input here
+export GEP_DATA_PATH=/standard/sbs/EVIO/Kin3     # User input here
