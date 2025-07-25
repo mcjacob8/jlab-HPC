@@ -128,7 +128,7 @@ fi
 
 #Automatically set the data path pased on the experiment number
 #Will need to get updated as more experiments are added
-export DATA_PATH=/scratch/rby2vw   # USER EDIT THIS HERE
+export DATA_PATH=/standard/sbs/EVIO/Kin3   # USER EDIT THIS HERE
 
 if [ $prefix = 'e1209019' ]
 then
