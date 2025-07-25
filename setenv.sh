@@ -7,6 +7,7 @@
 # appropriately for proper execution of any process.                         #
 # ---------                                                                  #
 # P. Datta <pdbforce@jlab.org> CREATED 07-25-2023                            #
+# J. McMurtry <rby2vw@virginia.org> MODIFIED 07-25-2025                      #
 # ---------                                                                  #
 # ** Do not tamper with this sticker! Log any updates to the script above.   #
 # -------------------------------------------------------------------------- #
@@ -31,7 +32,7 @@ JLABENV='2.6'   # /site/12gev_phys/softenv.sh version
 # ********************************************** # 
 
 # Required by all
-export SCRIPT_DIR=/standard/sbs/mcjacob/sbsoffline/GEP-Analysis
+export SCRIPT_DIR=/standard/sbs/mcjacob/jlab-HPC    # User input here
 
 # Required by the scripts running G4SBS or LIBSBSDIG jobs
 export G4SBS=/Path/to/G4SBS/install/directory
@@ -45,12 +46,12 @@ export LIBSBSDIG=/Path/to/libsbsdig/install/directory
 # Required by the scripts running replay (data or MC) jobs
 # $ANALYZER not needed while using modulefiles (See above)
 export ANALYZER=/standard/sbs/Analyzer
-export SBSOFFLINE=/standard/sbs/mcjacob/sbsoffline/install
-export SBS_REPLAY=/standard/sbs/mcjacob/sbsoffline/SBS-replay
+export SBSOFFLINE=/standard/sbs/mcjacob/sbsoffline/install    # User input here
+export SBS_REPLAY=/standard/sbs/mcjacob/sbsoffline/SBS-replay # User input here
 
 # Path to data directories (NOT User Specific)
 # The path is written this way below becauses strings will need
 # to be added to the left side of them, ie /cache/$GMN_DATA_PATH
 export GMN_DATA_PATH=halla/sbs/raw
 export GEN_DATA_PATH=halla/sbs/GEnII/raw
-export GEP_DATA_PATH=/scratch/rby2vw
+export GEP_DATA_PATH=/scratch/rby2vw     # User input here
